@@ -105,7 +105,7 @@ const router = express.Router();
 
 router.post("/new_survey", async (req, res) => {
   try {
-    const dummySurvey = { first_name: "John", last_name: "Smith" };
+    // const dummySurvey = { first_name: "John", last_name: "Smith" };
     const newSurvey = await postNewSurvey(dummySurvey);
     return res.status(200).send(newSurvey);
   } catch (err) {
