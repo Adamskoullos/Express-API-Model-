@@ -1,14 +1,14 @@
-// Solution 1
+// Solution
 // Is Immutable but only clones the top layer
 // I reach for the spread whenever it suits
 const deepCopy = (sourceObj) => {
   return { ...sourceObj };
 };
 
-// Solution 2
-// A good option when deep cloning objects with nested properties
-// Note: Does not clone methods !
-// A powerful pattern but not suitable for the example object
+// Not a solution but an interesting option when cloning objects with nested properties
+// Is immutable and also clones all levels of nested objects and arrays
+// Note: Does not clone methods !!!
+// A powerful pattern but not suitable for Set2 as it contains a method which is ignored and also turns the date into a string
 const deepCopyTwo = (sourceObj) => {
   return JSON.parse(JSON.stringify(sourceObj));
 };
