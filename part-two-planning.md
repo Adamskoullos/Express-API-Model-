@@ -17,6 +17,16 @@ Thinking about how to structure the db I feel drawn to having at least one colle
 
 ```
 
+**Note**: I am not sure as yet how to save `completed surveys` to different collections depending on their survey type, so for now there is one collection for completed surveys: `completed_surveys`.
+
+## Model & Controllers
+
+- Can I use one schema for different completed survey collections, maybe by `/api/{collection}` > eg: `/api/survey_one` ?
+
+1. Schema, model and controller for the templates collection via the route: `/api/survey_templates`.
+
+2. Schema, model and controller for the completed surveys collection via route: `/api/completed_surveys`.
+
 ## Schema
 
 A survey is likely to have 10's of questions but not 100's, however their may be 1000's of respondants. With this in mind I feel to go for a `survey collection` and for each completed form to be a `document` with each question/answer being an object within a questions array within the document.
@@ -25,135 +35,62 @@ This allows for all the data for a single survey type to be in a single collecti
 
 ## Workflows & Endpoints
 
-**Route**: `/api/surveys`
+---
+
+**Route**: `/api/survey_templates`
 
 **Template Owner**:
 
-- Create new survey template from user input: **POST**`/templates/create`
-- Let the user see all their survey templates: **GET**`/templates/all`
-- Let the user see a single survey template: **GET**`/templates/{id}`
-- Let the user edit their survey templates: **PATCH**`/templates/{id}`
-- Let the user delete templates: **DELETE**`/templates/{id}`
-- Let the user see the data and analysis for each active survey: **GET**`/templates/analysis/{id}`
+- [x] Create new survey template from user input: **POST**`/create`
+- [x] Let the user see all their survey templates: **GET**`/all`
+- [x] Let the **owner** and **respondant** users see a single survey template: **GET**`/{id}`
+- [x] Let the user edit their survey templates: **PATCH**`/{id}`
+- [x] Let the user delete templates: **DELETE**`/{id}`
+
+---
+
+**Route**: `/api/completed_surveys`
+
+**Owner**:
+
+- [ ] Get all surveys of a specific type: **GET**`/{title}`
+
+**Both Owner and Respondant users**:
+
+- [ ] Get survey report: **GET**`/analysis/{title}`
 
 **Respondant Users**:
 
-- Let the user see and complete the survey: **GET**`/{template_id}`
-- Let the user submit the completed survey: **POST**`/{template_id}`
-- On submission let the user see the data from all respondants so far for that survey type: **GET**`/analysis/{template_id}`
+- [ ] Let the user submit the completed survey: **POST**`/create`
 
-1. Make the model --------------------------------------------------
+---
 
-```js
-const mongoose = require("mongoose");
+## Development Process
 
-const { Schema } = mongoose;
+1. Make the models --------------------------------------------------
 
-const SurveySchema = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      maxlength: 20,
-    },
-    description: {
-      type: String,
-      required: true,
-      maxlength: 50,
-    },
-    questions: [
-      {
-        question: {
-          type: String,
-          required: true,
-          maxlength: 50,
-        },
-        answer_string: {
-          type: String,
-          maxlength: 50,
-        },
-        answer_boolean: {
-          type: Boolean,
-        },
-        answer_num: {
-          type: Number,
-        },
-      },
-    ],
-  },
-  {
-    timestamps: {
-      createdAt: "created_at",
-    },
-  }
-);
+**Questions**: Do I need to different Models in order to save to different collections as they are the same ?
 
-module.exports = mongoose.model("Survey", SurveySchema);
-```
+- [x] `SurveyTemplate.js`
+- [ ] `CompletedSurvey.js`
 
-2. Create the controller ---------------------------------------------------------
+2. Create the controllers ---------------------------------------------------------
+
+- [x] `surveyTemplateController.js`
+- [ ] `completedSurveyController.js`
+
+3. Within `app.js` add the routes to hit the endpoints files in the routes folder -------------------------
 
 ```js
-const Survey = require("../models/Survey");
-
-const postNewSurvey = async (survey) => {
-  try {
-    const newSurvey = new Survey({ ...survey });
-    const dbEntry = await newSurvey.save();
-    return dbEntry;
-  } catch (err) {
-    throw new Error(err);
-  }
-};
-
-const retrieveAllSurveys = async () => {
-  try {
-    const allSurveys = await Survey.find({});
-    return allSurveys;
-  } catch (err) {
-    throw new Error(err);
-  }
-};
-
-module.exports = { postNewSurvey, retrieveAllSurveys };
+app.use("/api/survey_templates", require("./routes/surveyTemplates"));
+app.use("/api/completed_surveys", require("./routes/completedSurveys"));
 ```
 
-3. Add the route to hit the endpoints file (survey.js) in the routes folder -------------------------
+4. Add endpoints to the routes folders (Task list within `Workflows & Endpoints` section above)
 
-```js
-app.use("/api/survey", require("./routes/survey"));
-```
+## Testing
 
-4. Create the endpoints -----------------------------------------------------------------
-
-```js
-const express = require("express");
-const {
-  postNewSurvey,
-  retrieveAllSurveys,
-} = require("../controllers/surveyController");
-const Survey = require("../models/Survey");
-
-const router = express.Router();
-
-router.post("/new_survey", async (req, res) => {
-  try {
-    // const dummySurvey = { first_name: "John", last_name: "Smith" };
-    const newSurvey = await postNewSurvey(dummySurvey);
-    return res.status(200).send(newSurvey);
-  } catch (err) {
-    return res.status(500).send({ error: err.message });
-  }
-});
-
-router.get("/all", async (_, res) => {
-  try {
-    const allSurveys = await retrieveAllSurveys();
-    return res.status(200).send(allSurveys);
-  } catch (err) {
-    return res.status(500).send({ error: err.message });
-  }
-});
-
-module.exports = router;
-```
+- [ ] research and model some relevant best practices
+- [ ] create a list of tests that could be done
+- [ ] create sudo code of test logic for each test
+- [ ] Add testing folder and test workflows (if viable)
