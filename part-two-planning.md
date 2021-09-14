@@ -7,17 +7,14 @@
 
 ## Database
 
-Thinking about how to structure the db I feel drawn to having at least one collection for a users survey templates and another for completed surveys. In the end I feel a more scalable approach would be for completed surveys to have a separate collection for each survey template. An example below:
+Thinking about how to structure the db I feel drawn to having at least one collection for a users survey templates and another for completed surveys. An example below:
 
 ```
-/user_one/
+/user_db/
         survey_templates_collection/
-        survey_one_collection/
-        survey_two_collection/
+        completed_survey_collection/
 
 ```
-
-**Note**: I am not sure as yet how to save `completed surveys` to different collections depending on their survey type, so for now there is one collection for completed surveys: `completed_surveys`.
 
 ## Model & Controllers
 
@@ -55,7 +52,7 @@ This allows for all the data for completed surveys to be in a single collection 
 
 **Owner**:
 
-- [x] Get all surveys of a specific type: **GET**`/all/type`
+- [x] Get all surveys of a specific type: **GET**`/all/type` // This should really be `/all/{template_id}`
 - [x] Use the list from the above endpoint and let the **owner** dig into individual completed surveys: **GET**`/{id}`
 
 **Both Owner and Respondant users**:
@@ -63,9 +60,15 @@ This allows for all the data for completed surveys to be in a single collection 
 Only basic metrics can be provided as the logic needs to allow for different survey templates. However some amazing work can be done here for say an initial customer onboarding survey for internal use by CP+R as all data points would be known and fixed. This data could then be used on the front end in conjunction with a graph library.
 CP+R has massive potential to add value in this area with interactive user analytics.
 
-- [ ] Get survey report: **GET**`/analysis/{title}`
+- [ ] Get survey report: **GET**`/analysis/{title}` // This should really be `/analysis/{template_id}`
 
----
+**Note**: Come back to the above should there be time after adding some tests:
+
+- Add dummy data file of completed surveys
+- Add them to the db on initial load ready to use
+- Create analysis logic and return the computed data
+
+This could be saved to a separate schema/collection but for now just send to the browser
 
 ## Development Process
 
@@ -81,18 +84,42 @@ CP+R has massive potential to add value in this area with interactive user analy
 - [x] `surveyTemplateController.js`
 - [x] `completedSurveyController.js`
 
-3. Within `app.js` add the routes to hit the endpoints files in the routes folder -------------------------
+3. Within `app.js` add the routes to hit the endpoint files in the routes folder -------------------------
 
 ```js
 app.use("/api/survey_templates", require("./routes/surveyTemplates"));
 app.use("/api/completed_surveys", require("./routes/completedSurveys"));
 ```
 
-4. Add endpoints to the routes folders (Task list within `Workflows & Endpoints` section above)
+4. Add endpoints to the routes folder (Task list within `Workflows & Endpoints` section above)
 
 ## Testing
 
-- [ ] research and model some relevant best practices
-- [ ] create a list of tests that could be done
-- [ ] create sudo code of test logic for each test
-- [ ] Add testing folder and test workflows (if viable)
+- [x] research and model some relevant best practices
+- [x] Set Jest up in the project and folder structure for tests
+- [ ] Create list of unit tests for each file
+- [ ] Create simple tests that test the main areas of the app
+
+---
+
+### Initial setup
+
+**Structure**: I am not sure the best way to structure test folders and files for large projects but have opted to go for a separate `__test__` folder to keep the main project less cluttered and then to organise test files in folders that mirror the main project to make it easy to find individual test files.
+
+1. Add Jest: `npm i --save-dev jest`
+2. Edit the package.json file to use jest when running test commands:
+
+```js
+"scripts": {
+    "test": "jest --coverage",
+```
+
+Adding `--coverage` to the above provides an organised view of all tests within the terminal and also creates an html report file to easily view test results.
+
+- To runs tests: `npm test`
+
+### Core test patterns and best practices:
+
+After scanning the docs, there is no point making pattern notes as it is really well presented in the docs.
+
+### Create list of tests for each file
