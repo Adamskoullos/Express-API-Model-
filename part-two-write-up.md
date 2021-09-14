@@ -1,9 +1,20 @@
-# Planning for Part 2
+# Planning & Testing for Part Two
 
-## Criteria
+ToC:
 
-1. Design and create the database schema
-2. Build out the endpoints
+### [Database](#Database)
+
+### [Models and Controllers](#Models-and-Controllers)
+
+### [Schema](#Schema)
+
+### [Workflows and Endpoints](#Workflows-and-Endpoints)
+
+### [Development Process](#Development-Process)
+
+### [Testing](#Testing)
+
+---
 
 ## Database
 
@@ -16,7 +27,7 @@ Thinking about how to structure the db I feel drawn to having at least one colle
 
 ```
 
-## Model & Controllers
+## Models and Controllers
 
 1. Schema, model and controller for the templates collection via the route: `/api/survey_templates`.
 
@@ -28,7 +39,7 @@ A survey is likely to have 10's of questions but not 100's, however their may be
 
 This allows for all the data for completed surveys to be in a single collection making it easier to work with the data. Once created the questions array is a fixed number so will not grow too large and with each respondant creating a new document the scalability to cope with 1000s of respondants is in place.
 
-## Workflows & Endpoints
+## Workflows and Endpoints
 
 ---
 
@@ -118,8 +129,36 @@ Adding `--coverage` to the above provides an organised view of all tests within 
 
 - To runs tests: `npm test`
 
-### Core test patterns and best practices:
+### Tests
 
-After scanning the docs, there is no point making pattern notes as it is really well presented in the docs.
+A list of simple unit tests that check the basics of each moving part of the application.
 
-### Create list of tests for each file
+#### Routes:
+
+**surveyTemplates.js & completedSurveys.js**:
+
+Write individual tests for each route, passing in dummy data to POST requests, providing an id where required:
+
+- if response status equals 200: `pass`, if 500: `fail`
+
+#### Controllers:
+
+**surveyTemplateController.js**:
+
+1. `PostNewSurvey()`: check to see if the passed in data is equal to the returned dbEntry: true = `pass`, false = `fail`
+
+2. `retrieveAllSurveys()`: Check to see if the returned item is an array. It would also be nice to check if the length of the array matches the db.
+
+3. `retrieveSurvey()`: Check if `survey` has a value and if the `_id` is equal to the `_id` passed in
+
+4. `updateSurvey()`: A more detailed test to first PATCH an update to a test survey and then make a GET request using the `_id` to check if the value of the updated data passed in matches the value for the property of the fetched survey.
+
+5. `deleteSurvey()`: Use a test survey and delete it using its `_id`, then attempt to GET the same survey using the same `_id`. An empty array is a `pass`, an array that has a length is a `fail`
+
+**completedSurveysController.js**:
+
+1. `postCompletedSurvey()`: check to see if the passed in data is equal to the returned dbEntry: true = `pass`, false = `fail`
+
+2. `retrieveAllSurveyType()`: Check to see if the returned item is an array. It would also be nice to check if the length of the array matches the db.
+
+3. `retrieveSurvey()`:

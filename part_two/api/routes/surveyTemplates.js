@@ -6,7 +6,6 @@ const {
   updateSurvey,
   deleteSurvey,
 } = require("../controllers/surveyTemplateController");
-const Survey = require("../models/SurveyTemplate");
 
 const router = express.Router();
 
@@ -16,11 +15,9 @@ const dummySurvey = {
   questions: [
     {
       question: "How many eyes have you got?",
-      answer_num: null,
     },
     {
       question: "Have you got a nose?",
-      answer_boolean: null,
     },
   ],
 };
@@ -58,7 +55,6 @@ const dummyUpdateData = {
   questions: [
     {
       question: "What is your favourite color?",
-      answer_string: "",
     },
   ],
 };

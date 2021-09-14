@@ -4,7 +4,6 @@ const {
   retrieveAllSurveyType,
   retrieveSurvey,
 } = require("../controllers/completedSurveyController");
-// const Survey = require("../models/CompletedSurvey");
 
 const router = express.Router();
 

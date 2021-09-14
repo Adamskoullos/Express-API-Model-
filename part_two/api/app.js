@@ -15,11 +15,7 @@ app.use(mongoSanitize());
 app.use(express.json());
 app.use(cors());
 
-// Test server running
-app.get("/test", (_, res) => res.status(200).send("Hello world"));
-
 // Routes
-app.use("/api/users", require("./routes/users"));
 app.use("/api/survey_templates", require("./routes/surveyTemplates"));
 app.use("/api/completed_surveys", require("./routes/completedSurveys"));
 
