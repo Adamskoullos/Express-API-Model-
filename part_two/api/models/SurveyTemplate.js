@@ -21,16 +21,6 @@ const SurveyTemplateSchema = new Schema(
           required: true,
           maxlength: 50,
         },
-        answer_string: {
-          type: String,
-          maxlength: 50,
-        },
-        answer_boolean: {
-          type: Boolean,
-        },
-        answer_num: {
-          type: Number,
-        },
       },
     ],
   },
