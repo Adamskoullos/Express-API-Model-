@@ -2,9 +2,9 @@
 
 ToC:
 
-- [Database](#Database)
-- [Models and Controllers](#Models-and-Controllers)
+- [Database](#Database-Design)
 - [Schema](#Schema)
+- [Routes](#Routes)
 - [Workflows and Endpoints](#Workflows-and-Endpoints)
 - [Development Process](#Development-Process)
 - [Testing](#Testing)
