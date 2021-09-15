@@ -2,23 +2,16 @@
 
 ToC:
 
-### [Database](#Database)
-
-### [Models and Controllers](#Models-and-Controllers)
-
-### [Schema](#Schema)
-
-### [Workflows and Endpoints](#Workflows-and-Endpoints)
-
-### [Development Process](#Development-Process)
-
-### [Testing](#Testing)
+- [Database](#Database)
+- [Models and Controllers](#Models-and-Controllers)
+- [Schema](#Schema)
+- [Workflows and Endpoints](#Workflows-and-Endpoints)
+- [Development Process](#Development-Process)
+- [Testing](#Testing)
 
 ---
 
-## Database
-
-Thinking about how to structure the db I feel drawn to having at least one collection for a users survey templates and another for completed surveys. An example below:
+## Database Design
 
 ```
 /user_db/
@@ -27,17 +20,17 @@ Thinking about how to structure the db I feel drawn to having at least one colle
 
 ```
 
-## Models and Controllers
-
-1. Schema, model and controller for the templates collection via the route: `/api/survey_templates`.
-
-2. Schema, model and controller for the completed surveys collection via route: `/api/completed_surveys`.
-
 ## Schema
 
 A survey is likely to have 10's of questions but not 100's, however their may be 1000's of respondants. With this in mind I feel to go for a completed surveys `collection` and for each completed form to be a `document` with each question/answer being an object within a questions array within the document.
 
 This allows for all the data for completed surveys to be in a single collection making it easier to work with the data. Once created the questions array is a fixed number so will not grow too large and with each respondant creating a new document the scalability to cope with 1000s of respondants is in place.
+
+## Routes
+
+1. `/api/survey_templates`.
+
+2. `/api/completed_surveys`.
 
 ## Workflows and Endpoints
 
@@ -49,9 +42,9 @@ This allows for all the data for completed surveys to be in a single collection 
 
 - [x] Create new survey template from user input: **POST**`/create`
 - [x] Let the user see all their survey templates: **GET**`/all`
-- [x] Let the **owner** and **respondant** users see a single survey template: **GET**`/{id}`
-- [x] Let the user edit their survey templates: **PATCH**`/{id}`
-- [x] Let the user delete templates: **DELETE**`/{id}`
+- [x] Let the **owner** and **respondant** users see a single survey template: **GET**`/:id`
+- [x] Let the user edit their survey templates: **PATCH**`/:id`
+- [x] Let the user delete templates: **DELETE**`/:id`
 
 ---
 
@@ -63,39 +56,27 @@ This allows for all the data for completed surveys to be in a single collection 
 
 **Owner**:
 
-- [x] Get all surveys of a specific type: **GET**`/all/type` // This should really be `/all/{template_id}`
-- [x] Use the list from the above endpoint and let the **owner** dig into individual completed surveys: **GET**`/{id}`
+- [x] Get all surveys of a specific type: **GET**`/all/type`
 
-**Both Owner and Respondant users**:
+**Note on above**: In a rudimentary manner I am passing in the `title` value here as the unique identifier to grab completed surveys of that type. I appreciate this should be something like `template_id` which could also then be used as the reference which would allow me to reduce duplicate data across collections.
 
-Only basic metrics can be provided as the logic needs to allow for different survey templates. However some amazing work can be done here for say an initial customer onboarding survey for internal use by CP+R as all data points would be known and fixed. This data could then be used on the front end in conjunction with a graph library.
-CP+R has massive potential to add value in this area with interactive user analytics.
-
-- [ ] Get survey report: **GET**`/analysis/{title}` // This should really be `/analysis/{template_id}`
-
-**Note**: Come back to the above should there be time after adding some tests:
-
-- Add dummy data file of completed surveys
-- Add them to the db on initial load ready to use
-- Create analysis logic and return the computed data
-
-This could be saved to a separate schema/collection but for now just send to the browser
+- [x] Use the list from the above endpoint and let the **owner** dig into individual completed surveys: **GET**`/:id`
 
 ## Development Process
 
-1. Make the models --------------------------------------------------
+1. Make the models
 
-**Note**: I feel I should be extending the `Survey_Template` schema to create the the `Completed_Surveys` schema but cannot so far find a pattern for this. I have found a mongoose plugin that does this but didn't want to rush into adding further dependencies without direction first as there is probably a better way.
+The schemas I have created are currently duplicating some data and need refactoring after some direction.
 
 - [x] `SurveyTemplate.js`
 - [x] `CompletedSurvey.js`
 
-2. Create the controllers ---------------------------------------------------------
+2. Create the controllers
 
 - [x] `surveyTemplateController.js`
 - [x] `completedSurveyController.js`
 
-3. Within `app.js` add the routes to hit the endpoint files in the routes folder -------------------------
+3. Within `app.js` add the routes to hit the endpoint files in the routes folder
 
 ```js
 app.use("/api/survey_templates", require("./routes/surveyTemplates"));
@@ -108,7 +89,7 @@ app.use("/api/completed_surveys", require("./routes/completedSurveys"));
 
 - [x] research and model some relevant best practices
 - [x] Set Jest up in the project and folder structure for tests
-- [ ] Create list of unit tests for each file
+- [x] Create list of unit tests for each file
 - [ ] Create simple tests that test the main areas of the app
 
 ---
@@ -149,9 +130,9 @@ Write individual tests for each route, passing in dummy data to POST requests, p
 
 2. `retrieveAllSurveys()`: Check to see if the returned item is an array. It would also be nice to check if the length of the array matches the db.
 
-3. `retrieveSurvey()`: Check if `survey` has a value and if the `_id` is equal to the `_id` passed in
+3. `retrieveSurvey()`: Check if `survey` has a value and if the `_id` is equal to the `_id` passed in: true = `pass`, false = `fail`
 
-4. `updateSurvey()`: A more detailed test to first PATCH an update to a test survey and then make a GET request using the `_id` to check if the value of the updated data passed in matches the value for the property of the fetched survey.
+4. `updateSurvey()`: A more detailed test to first PATCH an update to a test survey and then make a GET request using the `_id` to check if the value of the updated data passed in matches the value for the property of the fetched survey: true = `pass`, false = `fail`
 
 5. `deleteSurvey()`: Use a test survey and delete it using its `_id`, then attempt to GET the same survey using the same `_id`. An empty array is a `pass`, an array that has a length is a `fail`
 
@@ -161,4 +142,9 @@ Write individual tests for each route, passing in dummy data to POST requests, p
 
 2. `retrieveAllSurveyType()`: Check to see if the returned item is an array. It would also be nice to check if the length of the array matches the db.
 
-3. `retrieveSurvey()`:
+3. `retrieveSurvey()`: Check if `survey` has a value and if the `_id` is equal to the `_id` passed in: true = `pass`, false = `fail`
+
+#### Models:
+
+I would like to test if the data saved to the `completed_surveys` documents is saved as an allowed data type.
+This is new to me and I have attempted to allow answers to be multiple data types by the use of an array. This may not be quite right and a good area to drill into.

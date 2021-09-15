@@ -13,11 +13,15 @@ const dummySurvey = {
   questions: [
     {
       question: "How many eyes have you got?",
-      answer_num: 4,
+      answer: 4,
     },
     {
       question: "Have you got a nose?",
-      answer_boolean: true,
+      answer: true,
+    },
+    {
+      question: "What is the color of your eyes?",
+      answer: "Brown",
     },
   ],
 };

@@ -19,6 +19,9 @@ const dummySurvey = {
     {
       question: "Have you got a nose?",
     },
+    {
+      question: "What is the color of your eyes?",
+    },
   ],
 };
 

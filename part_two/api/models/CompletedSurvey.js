@@ -21,15 +21,9 @@ const CompletedSurveySchema = new Schema(
           required: true,
           maxlength: 50,
         },
-        answer_string: {
-          type: String,
-          maxlength: 50,
-        },
-        answer_boolean: {
-          type: Boolean,
-        },
-        answer_num: {
-          type: Number,
+        answer: {
+          type: ["string", "boolean", "number"],
+          maxlength: 100,
         },
       },
     ],
